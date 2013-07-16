@@ -252,10 +252,15 @@ class KeyHandler(object):
         Return the specific cache key for the sql query described by the
         pieces of the query and the generation key.
         """
+
+        key = md5()
+        key.update(str(params))
+        hashed_params = key.hexdigest()
+
         # these keys will always look pretty opaque
         suffix = self.keygen.gen_key(sql, params, order, result_type)
         using = settings.DB_CACHE_KEYS[using]
-        return '%s_%s_query_%s.%s' % (self.prefix, using, generation, suffix)
+        return '%s_%s_query_%s.%s.%s' % (self.prefix, using, generation, suffix, hashed_params)
 
 
 # XXX: Thread safety concerns?  Should we only need to patch once per process?
